@@ -2,9 +2,11 @@
 Researcher: Daniel Ossai
 Repo: aisecplus-week01-danielossai
 Submitted: Week 1 · AISec Plus Bootcamp
+
 📌 Incident Name & Date
 EchoLeak (CVE-2025-32711)
 Discovered: January 2025 · Disclosed: June 2025 · Patched: June 2025
+
 📝 What Happened
 Researchers at Aim Security discovered a critical zero-click indirect prompt injection vulnerability in Microsoft 365 Copilot. By sending a single crafted email — with no user interaction required — an attacker could cause Copilot to silently access internal files and exfiltrate their contents to an attacker-controlled server.
 The victim didn’t need to click anything. They didn’t need to open an attachment. Simply having the email in their inbox was enough for Copilot to process hidden malicious instructions and begin leaking sensitive enterprise data.
@@ -20,6 +22,7 @@ Copilot’s auto-fetch behaviour for embedded images was abused to initiate outb
 Step 4 — Content Security Policy (CSP) Bypass via Teams Proxy
 Microsoft Teams operates as a trusted proxy within M365’s content security policy. The attacker routed the exfiltration request through this allowed proxy, bypassing the CSP entirely.
 The result: Full privilege escalation across LLM trust boundaries, with no user interaction. The payload was pure text — no code, no malware signatures. Copilot was behaving exactly as designed: processing input and responding helpfully. Traditional defenses like antivirus, firewalls, and static file scanning were completely ineffective.
+
 🗺️ Threat Mapping
 |Framework      |Classification                                                                                |
 |---------------|----------------------------------------------------------------------------------------------|
@@ -28,7 +31,9 @@ The result: Full privilege escalation across LLM trust boundaries, with no user 
 |**OWASP LLM02**|Sensitive Information Disclosure — internal files exfiltrated without user consent            |
 |**OWASP LLM08**|Vector & Embedding Weaknesses — RAG architecture exploited to access internal data            |
 |**MITRE ATLAS**|Check [atlas.mitre.org/studies](https://atlas.mitre.org/studies) for the documented case study|
+
 Key insight: This is a textbook indirect prompt injection — the malicious instruction came from an external source (email), not from the user. The LLM could not distinguish between trusted developer context and untrusted external content.
+
 💥 The Impact
 EchoLeak represents a structural risk, not just a one-off bug:
 	•	Immediate risk: Any organisation with M365 Copilot enabled was potentially vulnerable to silent data exfiltration via a single crafted email
@@ -36,6 +41,7 @@ EchoLeak represents a structural risk, not just a one-off bug:
 	•	Novelty: First confirmed zero-click exploit against a production AI agent; the first time prompt injection achieved real data exfiltration in a live enterprise system
 	•	Broader implication: The structural attack surface applies to any LLM-based assistant with access to multiple internal data sources — not just Microsoft’s implementation
 	•	Confirmed exploitation: None in the wild; Microsoft patched server-side before known abuse occurred
+	
 🛡️ Prevention & Defense
 What Microsoft did:
 	•	Server-side patch deployed (no customer action required)
@@ -47,6 +53,7 @@ What the broader lesson is:
 	•	Separate instruction and data channels — the LLM should never be able to confuse a user’s email with an operator command
 	•	Output sandboxing — filter and validate what the model is allowed to send outbound before it leaves the system
 	•	Patching individual CVEs is not sufficient; the architectural pattern (LLM + RAG + broad data access) must be hardened by design
+	
 🔗 Sources
 	1.	The Hacker News — Zero-Click AI Vulnerability Exposes Microsoft 365 Copilot Data Without User Interaction
 https://thehackernews.com/2025/06/zero-click-ai-vulnerability-exposes.html
